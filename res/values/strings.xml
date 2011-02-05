@@ -5,4 +5,5 @@
     <string name="no_gps">Location unavailable</string>
     <string name="no_user">No user specified</string>
     <string name="no_barcode">No barcode has been scanned yet</string>
+    <string name="scan_button_label">Scan barcode</string>
 </resources>

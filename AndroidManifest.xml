@@ -8,8 +8,13 @@
         <activity android:name=".Tagger"
                   android:label="@string/app_name">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.TAGGER"/>
+            </intent-filter>
+        </activity>
+        <activity android:label="@string/app_name" android:name=".LogIn">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"></action>
+                <category android:name="android.intent.category.LAUNCHER"></category>
             </intent-filter>
         </activity>
 
