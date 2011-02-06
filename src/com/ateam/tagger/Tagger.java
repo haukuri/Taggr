@@ -29,18 +29,21 @@ public class Tagger extends Activity {
 	static final String TAG = "Tagger";
 	static final int BARCODE_ACTIVITY_RESULT = 0;
 	
+	// State variables
+	private String authToken;
+	
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.tagger);
+        authToken = savedInstanceState.getString("AUTH_TOKEN");
         
+        setContentView(R.layout.tagger);
         latitudeLabel = (TextView)findViewById(R.id.latitudeLabel);
         longitudeLabel = (TextView)findViewById(R.id.longitudeLabel);
         useridLabel = (TextView)findViewById(R.id.useridLabel);
         barcodeLabel = (TextView)findViewById(R.id.barcodeLabel);
         scanButton = (Button)findViewById(R.id.scanButton);
-        
         scanButton.setOnClickListener(scanButtonOnClickListener);
         
         // A LocationListener is an observer class that gets information from the Android location framework.
@@ -79,6 +82,14 @@ public class Tagger extends Activity {
     // The information sent should be the longitude, latitude, accuracy and user id
 	protected void sendLocation() {
 		Log.i(TAG, "Sending location");
+		if (Server.sendAgentLocation(mLocation, authToken)) {
+			// Success
+			Log.i(TAG, "Location successfully sent to server");
+		} else {
+			// Failure ... 
+			// TODO notify user if this happens more than once or twice in x seconds
+			Log.e(TAG, "Unable to send location");
+		}
 	}
 	
 	// See http://code.google.com/p/zxing/wiki/ScanningViaIntent
