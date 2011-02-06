@@ -5,6 +5,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -13,6 +14,9 @@ import android.widget.EditText;
 public class LogIn extends Activity {
 	EditText useridEntry;
 	Button loginButton;
+	
+	// Constants
+	private static String TAG = "LogIn";
 
 	/** Called when the activity is first created. */
 	@Override
@@ -34,9 +38,11 @@ public class LogIn extends Activity {
 			String userid = useridEntry.getText().toString();
 			try {
 				String authToken = Server.authenticateUser(userid);
+				Log.d(TAG, String.format("Got authentication token: %s", authToken));
 				Intent intent = new Intent();
 				intent.putExtra("AUTH_TOKEN", authToken);
-				intent.setClass(v.getContext(), Tagger.class);			
+				intent.putExtra("USERID", userid);
+				intent.setAction("android.intent.action.TAGGER");
 				startActivity(intent);
 			} catch (Exception e) {
 				AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());

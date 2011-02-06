@@ -31,17 +31,20 @@ public class Tagger extends Activity {
 	
 	// State variables
 	private String authToken;
+	private String userid;
 	
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        authToken = savedInstanceState.getString("AUTH_TOKEN");
+        authToken= getIntent().getExtras().getString("AUTH_TOKEN");
+        userid = getIntent().getExtras().getString("USERID");
         
         setContentView(R.layout.tagger);
         latitudeLabel = (TextView)findViewById(R.id.latitudeLabel);
         longitudeLabel = (TextView)findViewById(R.id.longitudeLabel);
         useridLabel = (TextView)findViewById(R.id.useridLabel);
+        useridLabel.setText(String.format("userid=%s\nauth token=%s", userid, authToken));
         barcodeLabel = (TextView)findViewById(R.id.barcodeLabel);
         scanButton = (Button)findViewById(R.id.scanButton);
         scanButton.setOnClickListener(scanButtonOnClickListener);

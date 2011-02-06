@@ -20,4 +20,6 @@
     <string name="backspace">&lt;-</string>
     <string name="empty_string"></string>
     <string name="login_instructions">To log in enter your Id below</string>
+    <string name="server_status_label">Server status:</string>
+    <string name="refresh">Refresh</string>
 </resources>
