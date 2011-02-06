@@ -17,4 +17,7 @@
     <string name="nine">9</string>
     <string name="zero">0</string>
     <string name="login">Log in</string>
+    <string name="backspace">&lt;-</string>
+    <string name="empty_string"></string>
+    <string name="login_instructions">To log in enter your Id below</string>
 </resources>
