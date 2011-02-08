@@ -7,6 +7,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -32,6 +33,7 @@ public class Tagger extends Activity {
 	// State variables
 	private String authToken;
 	private String userid;
+	private String deviceid;
 	
     /** Called when the activity is first created. */
     @Override
@@ -39,6 +41,14 @@ public class Tagger extends Activity {
         super.onCreate(savedInstanceState);
         authToken= getIntent().getExtras().getString("AUTH_TOKEN");
         userid = getIntent().getExtras().getString("USERID");
+        // This can sometimes throw a NullPointerException. Probably has something to do with 
+        // the emulator not having any telephony services.
+        try {
+        	TelephonyManager phone = (TelephonyManager) getBaseContext().getSystemService(Context.TELEPHONY_SERVICE);
+        	deviceid = phone.getDeviceId();
+        } catch (NullPointerException e) {
+        	deviceid = "FAKE_DEVICE_ID";
+        }
         
         setContentView(R.layout.tagger);
         latitudeLabel = (TextView)findViewById(R.id.latitudeLabel);
@@ -59,7 +69,7 @@ public class Tagger extends Activity {
         		mLocation = location;
         		latitudeLabel.setText(String.format("Latitude: %g", mLocation.getLatitude()));
         		longitudeLabel.setText(String.format("Longitude: %g", mLocation.getLongitude()));
-        		sendLocation();
+        		sendAgentLocation();
         	}
         	
         	// TODO: Update location precision information
@@ -82,16 +92,24 @@ public class Tagger extends Activity {
     
 	// Send location to central server if more than MAX_LOCATION_AGE seconds have passed
 	// since the last update. This should probably be done asynchronously (e.g. in a thread)
-    // The information sent should be the longitude, latitude, accuracy and user id
-	protected void sendLocation() {
+	protected void sendAgentLocation() {
 		Log.i(TAG, "Sending location");
-		if (Server.sendAgentLocation(mLocation, authToken)) {
+		if (Server.sendAgentLocation(mLocation, userid, deviceid)) {
 			// Success
 			Log.i(TAG, "Location successfully sent to server");
 		} else {
 			// Failure ... 
 			// TODO notify user if this happens more than once or twice in x seconds
 			Log.e(TAG, "Unable to send location");
+		}
+	}
+	
+	protected void sendPatientLocation(Location pLocation, String qrcode) {
+		Log.i(TAG, "Sending patient location");
+		if (Server.sendPatientLoaction(pLocation, qrcode, userid, deviceid)) {
+			Log.i(TAG, String.format("QRCode %s successfully sent to server", qrcode));
+		} else {
+			Log.e(TAG, String.format("Failed to send QRCode %s to server", qrcode));
 		}
 	}
 	
@@ -114,6 +132,7 @@ public class Tagger extends Activity {
 				
 				// Handle successful scan
 				barcodeLabel.setText(String.format("Format: %s, Contents: %s", format, contents));
+				sendPatientLocation(mLocation, contents);
 			} else if (resultCode == RESULT_CANCELED) {
 				Log.i(TAG, "Failed to acquire barcode");
 				barcodeLabel.setText("Failed to  barcode");
