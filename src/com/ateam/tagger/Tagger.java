@@ -135,7 +135,7 @@ public class Tagger extends Activity {
 				sendPatientLocation(mLocation, contents);
 			} else if (resultCode == RESULT_CANCELED) {
 				Log.i(TAG, "Failed to acquire barcode");
-				barcodeLabel.setText("Failed to  barcode");
+				barcodeLabel.setText("Failed to acquire barcode");
 			}
 		}
 	}

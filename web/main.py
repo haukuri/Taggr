@@ -40,6 +40,18 @@ class AgentLocationPage(webapp.RequestHandler):
 
         self.response.out.write("</body></html>")
 
+    def post(self):
+        fix = AgentLocation()
+        fix.agentid = self.request.get("agentid")
+        fix.deviceid = self.request.get("deviceid")
+        fix.time = self.request.get("time")
+        fix.longitude = self.request.get("longitude")
+        fix.latitude = self.request.get("latitude")
+        fix.put()
+        self.request.set_status(200)
+
+
+
 class PatientLocationPage(webapp.RequestHandler):
     def get(self):
         self.response.out.write("<html><body>")
