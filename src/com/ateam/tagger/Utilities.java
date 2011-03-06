@@ -64,11 +64,11 @@ public class Utilities {
 		return retry;
 	}
 	
-	public static String authenticateUser(String userid) throws Exception {
+	public static boolean validateUser(String userid) {
 		if (userid.compareTo("1337") == 0) {
-			return "this is an auth token";
+			return true;
 		} else {
-			throw new Exception("Invalid user");
+			return false;
 		}
 	}
 }
