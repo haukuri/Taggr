@@ -106,8 +106,12 @@ public class Tagger extends Activity {
 
 		message.putString("url", AGENT_LOCATION_URL);
 		message.putBundle("postdata", postData);
+		
+		Intent sendMessageIntent = new Intent(this, CommunicationService.class);
+		sendMessageIntent.putExtra("message", message);
+		startService(sendMessageIntent);
 
-		new SendHttpPostTask().execute(message);
+		// new SendHttpPostTask().execute(message);
 	}
 
 	protected void sendPatientLocation(Location pLocation, String qrcode) {
@@ -125,8 +129,12 @@ public class Tagger extends Activity {
 
 		message.putString("url", PATIENT_LOCATION_URL);
 		message.putBundle("postdata", postData);
+		
+		Intent sendMessageIntent = new Intent(this, CommunicationService.class);
+		sendMessageIntent.putExtra("message", message);
+		startService(sendMessageIntent);
 
-		new SendHttpPostTask().execute(message);
+		// new SendHttpPostTask().execute(message);
 	}
 
 	// See http://code.google.com/p/zxing/wiki/ScanningViaIntent

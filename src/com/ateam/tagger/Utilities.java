@@ -38,29 +38,29 @@ public class Utilities {
 		HttpClient client = new DefaultHttpClient();
 		HttpPost post = new HttpPost(message.getString("url"));
 		List<NameValuePair> postDataList = new LinkedList<NameValuePair>();
-		Boolean success = true;
+		Boolean retry = false;
 		for (String key : message.getBundle("postdata").keySet()) {
 			postDataList.add(new BasicNameValuePair(key, message.getBundle("postdata").getString(key)));
 		}
 		try {
 			post.setEntity(new UrlEncodedFormEntity(postDataList));
 		} catch (UnsupportedEncodingException e) {
-			Log.e(TAG, "Could not encode data", e);
+			Log.e(TAG, "Could not encode data. Aborting.", e);
+			return false;
 		}
 
 		try {
 			HttpResponse response = client.execute(post);
 			int status = response.getStatusLine().getStatusCode();
 			Log.i(TAG, String.format("Received HTTP status code: %d", status));
-			success = (response.getStatusLine().getStatusCode() == 200);
+			if (status == 200) Log.i(TAG, "Message successfully sent");
 		} catch (ClientProtocolException e) {
-			success = false;
 			Log.e(TAG, "Message not sent", e);
 		} catch (IOException e) {
-			success = false;
+			retry = true;
 			Log.e(TAG, "Message not sent", e);
 		}
-
-		return success;
+		
+		return retry;
 	}
 }

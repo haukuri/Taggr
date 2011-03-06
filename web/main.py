@@ -48,7 +48,7 @@ class AgentLocationPage(webapp.RequestHandler):
         fix.longitude = self.request.get("longitude")
         fix.latitude = self.request.get("latitude")
         fix.put()
-        self.request.set_status(200)
+        self.response.set_status(200)
 
 
 
