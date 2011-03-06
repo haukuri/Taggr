@@ -32,8 +32,8 @@ public class Tagger extends Activity {
 	// Constants
 	static final String TAG = "Tagger";
 	static final int BARCODE_ACTIVITY_RESULT = 0;
-	static final String AGENT_LOCATION_URL = "http://srtagger.appspot.com/agentlocation";
-	static final String PATIENT_LOCATION_URL = "http://srtagger.appspot.com/patientlocation";
+	static final String AGENT_LOCATION_URL = "https://srtagger.appspot.com/agentlocation";
+	static final String PATIENT_LOCATION_URL = "https://srtagger.appspot.com/patientlocation";
 
 	// State variables
 	private Bundle mBundle;
