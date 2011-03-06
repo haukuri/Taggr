@@ -27,8 +27,7 @@ public class Utilities {
 		// something to do with
 		// the emulator not having any telephony services.
 		try {
-			TelephonyManager phone = (TelephonyManager) context
-					.getSystemService(Context.TELEPHONY_SERVICE);
+			TelephonyManager phone = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
 			return phone.getDeviceId();
 		} catch (NullPointerException e) {
 			return "FAKE_DEVICE_ID";
@@ -41,8 +40,7 @@ public class Utilities {
 		List<NameValuePair> postDataList = new LinkedList<NameValuePair>();
 		Boolean success = true;
 		for (String key : message.getBundle("postdata").keySet()) {
-			postDataList.add(new BasicNameValuePair(key, message.getBundle(
-					"postdata").getString(key)));
+			postDataList.add(new BasicNameValuePair(key, message.getBundle("postdata").getString(key)));
 		}
 		try {
 			post.setEntity(new UrlEncodedFormEntity(postDataList));

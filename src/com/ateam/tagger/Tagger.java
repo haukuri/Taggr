@@ -37,6 +37,7 @@ public class Tagger extends Activity {
 	static final String TAG = "Tagger";
 	static final int BARCODE_ACTIVITY_RESULT = 0;
 	static final String AGENT_LOCATION_URL = "http://srtagger.appspot.com/agentlocation";
+	static final String PATIENT_LOCATION_URL = "http://srtagger.appspot.com/patientlocation";
 
 	// State variables
 	private Bundle mBundle;
@@ -45,16 +46,15 @@ public class Tagger extends Activity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		mBundle = (savedInstanceState != null) ? savedInstanceState
-				: new Bundle();
+		mBundle = (savedInstanceState != null) ? savedInstanceState : new Bundle();
 		mBundle.putAll(getIntent().getExtras());
 
 		setContentView(R.layout.tagger);
 		latitudeLabel = (TextView) findViewById(R.id.latitudeLabel);
 		longitudeLabel = (TextView) findViewById(R.id.longitudeLabel);
 		useridLabel = (TextView) findViewById(R.id.useridLabel);
-		useridLabel.setText(String.format("userid=%s\nauth token=%s",
-				mBundle.getString("userid"), mBundle.getString("auth-token")));
+		useridLabel.setText(String.format("userid=%s\nauth token=%s", mBundle.getString("userid"),
+				mBundle.getString("auth-token")));
 		barcodeLabel = (TextView) findViewById(R.id.barcodeLabel);
 		scanButton = (Button) findViewById(R.id.scanButton);
 		scanButton.setOnClickListener(scanButtonOnClickListener);
@@ -63,45 +63,33 @@ public class Tagger extends Activity {
 		// the Android location framework.
 		// The LocationManager is a facade for the location framework
 		// http://developer.android.com/guide/topics/location/obtaining-user-location.html
-		locationManager = (LocationManager) this
-				.getSystemService(Context.LOCATION_SERVICE);
+		locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
 		LocationListener locationListener = new LocationListener() {
 			public void onLocationChanged(Location location) {
 				Log.i(TAG, "Recieved a LocationChanged signal");
 				mLocation = location;
-				latitudeLabel.setText(String.format("Latitude: %g",
-						mLocation.getLatitude()));
-				longitudeLabel.setText(String.format("Longitude: %g",
-						mLocation.getLongitude()));
+				latitudeLabel.setText(String.format("Latitude: %g", mLocation.getLatitude()));
+				longitudeLabel.setText(String.format("Longitude: %g", mLocation.getLongitude()));
 				sendAgentLocation();
 			}
 
 			// TODO: Update location precision information
-			public void onStatusChanged(String provider, int status,
-					Bundle extras) {
-				Log.i(TAG,
-						String.format(
-								"Recieved a StatusChanged signal: Provider %s, status %d",
-								provider, status));
+			public void onStatusChanged(String provider, int status, Bundle extras) {
+				Log.i(TAG, String.format("Recieved a StatusChanged signal: Provider %s, status %d", provider, status));
 			}
 
 			// TODO: Update status icon?
 			public void onProviderEnabled(String provider) {
-				Log.i(TAG, String.format(
-						"Recieved a ProviderEnabled signal: Provider %s",
-						provider));
+				Log.i(TAG, String.format("Recieved a ProviderEnabled signal: Provider %s", provider));
 			}
 
 			// TODO: Update status icon and possibly warn user if GPS is not
 			// working
 			public void onProviderDisabled(String provider) {
-				Log.i(TAG, String.format(
-						"Recieved a ProviderDisabled signal: Provider %s",
-						provider));
+				Log.i(TAG, String.format("Recieved a ProviderDisabled signal: Provider %s", provider));
 			}
 		};
-		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0,
-				0, locationListener);
+		locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
 	}
 
 	protected void sendAgentLocation() {
@@ -111,13 +99,10 @@ public class Tagger extends Activity {
 
 		postData.putString("agentid", mBundle.getString("userid"));
 		postData.putString("deviceid", Utilities.getDeviceId(this));
-		SimpleDateFormat format = new SimpleDateFormat(
-				"yyyy-MM-dd HH:mm:ss.SSSZ", Locale.getDefault());
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSZ", Locale.getDefault());
 		postData.putString("time", format.format(new Date()));
-		postData.putString("longitude",
-				String.format("%f", mLocation.getLongitude()));
-		postData.putString("latitude",
-				String.format("%f", mLocation.getLatitude()));
+		postData.putString("longitude", String.format("%f", mLocation.getLongitude()));
+		postData.putString("latitude", String.format("%f", mLocation.getLatitude()));
 
 		message.putString("url", AGENT_LOCATION_URL);
 		message.putBundle("postdata", postData);
@@ -127,14 +112,21 @@ public class Tagger extends Activity {
 
 	protected void sendPatientLocation(Location pLocation, String qrcode) {
 		Log.i(TAG, "Sending patient location");
-		if (Server.sendPatientLoaction(pLocation, qrcode,
-				mBundle.getString("userid"), Utilities.getDeviceId(this))) {
-			Log.i(TAG, String.format("QRCode %s successfully sent to server",
-					qrcode));
-		} else {
-			Log.e(TAG,
-					String.format("Failed to send QRCode %s to server", qrcode));
-		}
+		Bundle message = new Bundle();
+		Bundle postData = new Bundle();
+
+		postData.putString("agentid", mBundle.getString("userid"));
+		postData.putString("deviceid", Utilities.getDeviceId(this));
+		postData.putString("qrcode", qrcode);
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSSZ", Locale.getDefault());
+		postData.putString("time", format.format(new Date()));
+		postData.putString("longitude", String.format("%f", pLocation.getLongitude()));
+		postData.putString("latitude", String.format("%f", pLocation.getLatitude()));
+
+		message.putString("url", PATIENT_LOCATION_URL);
+		message.putBundle("postdata", postData);
+
+		new SendHttpPostTask().execute(message);
 	}
 
 	// See http://code.google.com/p/zxing/wiki/ScanningViaIntent
@@ -155,8 +147,7 @@ public class Tagger extends Activity {
 				String format = intent.getStringExtra("SCAN_RESULT_FORMAT");
 
 				// Handle successful scan
-				barcodeLabel.setText(String.format("Format: %s, Contents: %s",
-						format, contents));
+				barcodeLabel.setText(String.format("Format: %s, Contents: %s", format, contents));
 				sendPatientLocation(mLocation, contents);
 			} else if (resultCode == RESULT_CANCELED) {
 				Log.i(TAG, "Failed to acquire barcode");
@@ -180,14 +171,11 @@ public class Tagger extends Activity {
 		@Override
 		protected void onPostExecute(Boolean success) {
 			NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-			Notification mNotification = new Notification(R.drawable.icon,
-					"Ticker text", System.currentTimeMillis());
+			Notification mNotification = new Notification(R.drawable.icon, "Ticker text", System.currentTimeMillis());
 			Context context = getApplicationContext();
 			Intent notificationIntent = new Intent(Tagger.this, Tagger.class);
-			PendingIntent contentIntent = PendingIntent.getActivity(
-					Tagger.this, 0, notificationIntent, 0);
-			mNotification.setLatestEventInfo(context, "Mothership",
-					(success) ? "Success" : "Fail", contentIntent);
+			PendingIntent contentIntent = PendingIntent.getActivity(Tagger.this, 0, notificationIntent, 0);
+			mNotification.setLatestEventInfo(context, "Mothership", (success) ? "Success" : "Fail", contentIntent);
 			mNotificationManager.notify(1, mNotification);
 			String msg;
 			if (success) {
