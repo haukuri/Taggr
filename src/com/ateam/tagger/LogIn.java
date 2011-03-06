@@ -36,7 +36,7 @@ public class LogIn extends Activity {
 		public void onClick(View v) {
 			String userid = useridEntry.getText().toString();
 			try {
-				String authToken = Server.authenticateUser(userid);
+				String authToken = Utilities.authenticateUser(userid);
 				Log.d(TAG, String.format("Got authentication token: %s",
 						authToken));
 				Intent intent = new Intent();

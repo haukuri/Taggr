@@ -5,15 +5,11 @@ import java.util.Date;
 import java.util.Locale;
 
 import android.app.Activity;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -161,37 +157,6 @@ public class Tagger extends Activity {
 				Log.i(TAG, "Failed to acquire barcode");
 				barcodeLabel.setText("Failed to acquire barcode");
 			}
-		}
-	}
-
-	private class SendHttpPostTask extends AsyncTask<Bundle, Void, Boolean> {
-		public static final String TAG = "SendHttpPostTask";
-
-		@Override
-		protected Boolean doInBackground(Bundle... messages) {
-			Boolean success = true;
-			for (Bundle message : messages) {
-				success = success & Utilities.sendHttpPostMessage(message);
-			}
-			return success;
-		}
-
-		@Override
-		protected void onPostExecute(Boolean success) {
-			NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-			Notification mNotification = new Notification(R.drawable.icon, "Ticker text", System.currentTimeMillis());
-			Context context = getApplicationContext();
-			Intent notificationIntent = new Intent(Tagger.this, Tagger.class);
-			PendingIntent contentIntent = PendingIntent.getActivity(Tagger.this, 0, notificationIntent, 0);
-			mNotification.setLatestEventInfo(context, "Mothership", (success) ? "Success" : "Fail", contentIntent);
-			mNotificationManager.notify(1, mNotification);
-			String msg;
-			if (success) {
-				msg = "success";
-			} else {
-				msg = "fail";
-			}
-			Log.i(TAG, msg);
 		}
 	}
 }

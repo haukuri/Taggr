@@ -63,4 +63,12 @@ public class Utilities {
 		
 		return retry;
 	}
+	
+	public static String authenticateUser(String userid) throws Exception {
+		if (userid.compareTo("1337") == 0) {
+			return "this is an auth token";
+		} else {
+			throw new Exception("Invalid user");
+		}
+	}
 }
