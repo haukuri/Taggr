@@ -2,6 +2,14 @@ from google.appengine.ext import webapp
 from google.appengine.ext.webapp.util import run_wsgi_app
 from google.appengine.ext import db
 
+from django.utils import simplejson as json
+
+def to_json(entity):
+    output = {}
+    for key in entity.properties().iterkeys():
+        output[key] = getattr(entity, key)
+    return json.dumps(output)
+
 class AgentLocation(db.Model):
     agentid = db.StringProperty()
     deviceid = db.StringProperty()
@@ -19,26 +27,11 @@ class PatientLocation(db.Model):
 
 class AgentLocationPage(webapp.RequestHandler):
     def get(self):
-        self.response.out.write("<html><body>")
-
         # Retrieve AgentLocations from the datastore
         agent_locations = db.GqlQuery("SELECT * FROM AgentLocation ORDER BY " +
                                       "time DESC")
-
-        # Write a table for for location fixes
-        self.response.out.write("<table><tr><th>Agent</th><th>Device</th>" +
-                                "<th>Timestamp</th><th>Longitude</th>" +
-                                "<th>Latitude</th></tr>")
         for fix in agent_locations:
-            self.response.out.write("<tr>")
-            data = (fix.agentid, fix.deviceid, fix.time, fix.longitude,
-                    fix.latitude)
-            for x in data:
-                self.response.out.write("<td>%s</td>" % x)
-            self.response.out.write("</tr>")
-        self.response.out.write("</table>")
-
-        self.response.out.write("</body></html>")
+            self.response.out.write(to_json(fix)+"\n")
 
     def post(self):
         fix = AgentLocation()

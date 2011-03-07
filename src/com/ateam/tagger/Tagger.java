@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class Tagger extends Activity {
 	// Widgets
@@ -136,10 +137,14 @@ public class Tagger extends Activity {
 	// See http://code.google.com/p/zxing/wiki/ScanningViaIntent
 	private OnClickListener scanButtonOnClickListener = new OnClickListener() {
 		public void onClick(View v) {
-			Intent intent = new Intent("com.google.zxing.client.android.SCAN");
-			intent.setPackage("com.google.zxing.client.android");
-			intent.putExtra("SCAN_MODE", "QR_CODE_MODE");
-			startActivityForResult(intent, BARCODE_ACTIVITY_RESULT);
+			if (mLocation != null) {
+				Intent intent = new Intent("com.google.zxing.client.android.SCAN");
+				intent.setPackage("com.google.zxing.client.android");
+				intent.putExtra("SCAN_MODE", "QR_CODE_MODE");
+				startActivityForResult(intent, BARCODE_ACTIVITY_RESULT);
+			} else {
+				Toast.makeText(getApplicationContext(), "Please wait for a GPS fix before tagging!", Toast.LENGTH_SHORT).show();
+			}
 		}
 	};
 
