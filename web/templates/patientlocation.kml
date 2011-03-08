@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Style id="red">
+  <IconStyle>
+    <Icon>
+      <href>http://www.google.com/intl/en_us/mapfiles/ms/icons/red-dot.png</href>
+    </Icon>
+  </IconStyle>
+</Style>
+
+<Style id="green">
+  <IconStyle>
+    <Icon>
+      <href>http://www.google.com/intl/en_us/mapfiles/ms/icons/green-dot.png</href>
+    </Icon>
+  </IconStyle>
+</Style>
+
+<Style id="yellow">
+  <IconStyle>
+    <Icon>
+      <href>http://www.google.com/intl/en_us/mapfiles/ms/icons/yellow-dot.png</href>
+    </Icon>
+  </IconStyle>
+</Style>
+<Style id="blue">
+  <IconStyle>
+    <Icon>
+      <href>http://www.google.com/intl/en_us/mapfiles/ms/icons/blue-dot.png</href>
+    </Icon>
+  </IconStyle>
+</Style>
+  <Document>
+  {% for fix in fixes %}
+  <Placemark>
+    <name>{{ fix.agentid }} at {{ fix.time }}</name>
+    <description>{{ fix.color }}</description>
+    <styleUrl>#{{ fix.color }}</styleUrl>
+    <Point>
+      <coordinates>{{ fix.longitude }},{{ fix.latitude }},0</coordinates>
+    </Point>
+  </Placemark>
+  {% endfor %}
+  </Document>
+</kml>
