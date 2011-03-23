@@ -17,7 +17,6 @@ public class LogIn extends Activity {
 	@SuppressWarnings("unused")
 	private static String TAG = "LogIn";
 
-	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
