@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <kml xmlns="http://www.opengis.net/kml/2.2">
-<Style id="red">
+  <Document>
+  <Style id="red">
   <IconStyle>
     <Icon>
       <href>http://www.google.com/intl/en_us/mapfiles/ms/icons/red-dot.png</href>
@@ -30,7 +31,11 @@
     </Icon>
   </IconStyle>
 </Style>
-  <Document>
+  <Schema name="PatientSchema" id="PatientSchemaId">
+	<SimpleField type="string" name="code"> <displayName><![CDATA[QR Code]]></displayName></SimpleField>
+	<SimpleField type="string" name="agentid"> <displayName><![CDATA[Agent id]]></displayName></SimpleField>
+	<SimpleField type="string" name="time"> <displayName><![CDATA[Time tagged]]></displayName></SimpleField>
+  </Schema>
   {% for fix in fixes %}
   <Placemark>
     <name>{{ fix.agentid }} at {{ fix.time }}</name>
@@ -39,6 +44,13 @@
     <Point>
       <coordinates>{{ fix.longitude }},{{ fix.latitude }},0</coordinates>
     </Point>
+    <ExtendedData>
+    	<SchemaData schemaUrl="#PatientSchemaId">
+    		<SimpleData name="code">{{ fix.qrcode }}</SimpleData>
+    		<SimpleData name="agentid">{{ fix.agentid }}</SimpleData>
+    		<SimpleData name="time">{{ fix.time }}</SimpleData>
+    	</SchemaData>
+    </ExtendedData>
   </Placemark>
   {% endfor %}
   </Document>
